@@ -17,6 +17,7 @@ public sealed class Game : GameBase {
     private Ball ball;
     private Player player;
     private List<Block> blocks;
+    private bool gameCleared;
     [SerializeField] private int sumOfBlocks = 50;
 
     /// <summary>
@@ -53,7 +54,7 @@ public sealed class Game : GameBase {
                 }
             });
         };
-        
+        gameCleared = false;
     }
 
 
@@ -61,10 +62,11 @@ public sealed class Game : GameBase {
     /// 動きなどの更新処理
     /// </summary>
     public override void UpdateGame() {
-        // 起動からの経過時間を取得します
-        sec = (int) gc.TimeSinceStartup;
         ball.Update();
-        player.Update(gc.GetPointerFrameCount(0), gc.GetPointerX(0));
+        player.Update(gc.GetPointerFrameCount(0), gc.GetPointerX(0), gc.GetPointerY(0));
+        gameCleared = blocks.All(block => !block.IsAlive);
+        // 起動からの経過時間を取得します
+        if(!gameCleared) sec = (int) gc.TimeSinceStartup;
     }
 
     /// <summary>
@@ -79,7 +81,7 @@ public sealed class Game : GameBase {
         else gc.DrawString("Game Over!!", (int)screenSize.x / 2, (int)screenSize.y / 2);
 
         gc.SetColor(0, 0, 255);
-        gc.FillRect((int) player.Position.x, (int) player.Position.y, (int) player.Size.x, (int) player.Position.y);
+        gc.FillRect((int) player.Position.x, (int) player.Position.y, (int) player.Size.x, (int) player.Size.y);
 
         foreach (var (block, index) in blocks.Select((block, index) => (block, index))) {
             if (!block.IsAlive) continue;
@@ -87,8 +89,8 @@ public sealed class Game : GameBase {
             gc.FillRect((int) block.Position.x, (int) block.Position.y, (int) Block.Size.x, (int) Block.Size.y);
         }
 
-        if (blocks.All(block => !block.IsAlive)) {
-            gc.DrawString("Game Clear!!", (int)screenSize.x / 2, (int)screenSize.y / 2);
+        if (gameCleared) {
+            gc.DrawString($"Game Clear!! Point: {sec}", (int)screenSize.x / 2, (int)screenSize.y / 2);
         }
 
     }
@@ -156,9 +158,11 @@ internal class Player : IGameObject {
         Size = size;
     }
 
-    public void Update(int pointerFrameCount, int touchedPointerX) {
-        if (pointerFrameCount > 0)
+    public void Update(int pointerFrameCount, int touchedPointerX, int touchedPointerY) {
+        if (pointerFrameCount > 0) {
             Position.x = touchedPointerX - Size.x / 2;
+            Position.y = touchedPointerY - Size.y / 2;
+        }
     }
 }
 
