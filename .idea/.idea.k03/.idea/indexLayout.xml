@@ -17,6 +17,7 @@
       <Path>Logs</Path>
       <Path>Temp</Path>
       <Path>docs</Path>
+      <Path>iOS</Path>
       <Path>obj</Path>
     </explicitExcludes>
   </component>

@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Keio University
+  companyName: sabaniki.sfc.keio.ac.jp
   productName: GameCanvas
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -166,7 +166,7 @@ PlayerSettings:
     Android: jp.ac.keio.sfc.sdp
     Standalone: unity.Keio University.GameCanvas
     Tizen: jp.ac.keio.sfc.sdp
-    iPhone: jp.ac.keio.sfc.sdp
+    iPhone: jp.ac.keio.sfc.sdp.sabaniki
     tvOS: jp.ac.keio.sfc.sdp
   buildNumber:
     iPhone: 0
@@ -895,7 +895,6 @@ PlayerSettings:
   XboxOnePersistentLocalStorageSize: 0
   XboxOneXTitleMemory: 8
   XboxOneOverrideIdentityName: 
-  XboxOneOverrideIdentityPublisher: 
   vrEditorSettings:
     daydream:
       daydreamIconForeground: {fileID: 0}
