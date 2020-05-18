@@ -42,7 +42,7 @@ public sealed class Game : GameBase {
                 if (gc.CheckHitRect(
                     (int) ball.Position.x, (int) ball.Position.y, ball.BallRadius, ball.BallRadius,
                     (int) player.Position.x, (int) player.Position.y, (int) player.Size.x, (int) player.Size.y
-                )) {
+                ) && ball.Speed.y > 0) {
                     ball.Speed.y = -ball.Speed.y;
                 }
             };
@@ -72,6 +72,7 @@ public sealed class Game : GameBase {
     /// 動きなどの更新処理
     /// </summary>
     public override void UpdateGame() {
+        gameCleared = blocks.All(block => !block.IsAlive);
         balls.ToList().ForEach(ball => ball.Update()); 
         balls.ToList().ForEach(ball => {
             if (ball.IsAlive) gc.DrawImage(1, (int) ball.Position.x, (int) ball.Position.y);
@@ -79,7 +80,7 @@ public sealed class Game : GameBase {
 
         player.Update(gc.GetPointerFrameCount(0), gc.GetPointerX(0), gc.GetPointerY(0));
         // 起動からの経過時間を取得します
-        if (!gameCleared) sec = (int) gc.TimeSinceStartup;
+        if (!gameCleared) sec++;
     }
 
     /// <summary>
@@ -108,7 +109,7 @@ public sealed class Game : GameBase {
         }
 
         if (gameCleared) {
-            gc.DrawString($"Game Clear!! time: {sec}s", (int) screenSize.x / 2, (int) screenSize.y / 2);
+            gc.DrawString($"Game Clear!! frames: {sec}s", (int) screenSize.x / 2, (int) screenSize.y / 2);
         }
     }
 }
