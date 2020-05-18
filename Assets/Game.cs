@@ -25,7 +25,15 @@ public sealed class Game : GameBase {
         player = new Player(new Vector2(270, 460), new Vector2(100, 20));
         // キャンバスの大きさを設定します
         gc.SetResolution((int)ScreenSize.x, (int)ScreenSize.y);
-        ball.updateCallback += () => { Debug.Log(ball.Position.ToString());};
+        ball.UpdateCallback += () => {
+            if (gc.CheckHitRect(
+                (int)ball.Position.x, (int)ball.Position.y, ball.BallRadius, ball.BallRadius,
+                (int)player.Position.x, (int)player.Position.y, (int)player.Size.x, (int)player.Size.y
+                )) {
+                ball.Speed.y = -ball.Speed.y;
+
+            }
+        };
         isBallAlive = true;
     }
 
@@ -47,42 +55,40 @@ public sealed class Game : GameBase {
     public override void DrawGame() {
         // 画面を白で塗りつぶします
         gc.ClearScreen();
-
-        // 0番の画像を描画します
-        if (isBallAlive) {
             gc.DrawImage(0, 0, 0);
-            gc.DrawImage(1, (int)ball.Position.x, (int)ball.Position.y);
-        }
-        
+        // 0番の画像を描画します
+        if (isBallAlive) gc.DrawImage(1, (int)ball.Position.x, (int)ball.Position.y);
+
         gc.SetColor(0, 0, 255);
         gc.FillRect((int)player.Position.x, (int)player.Position.y, (int)player.Size.x, (int)player.Position.y);
     }
 }
 
-interface IGameObject {
+internal interface IGameObject {
 }
 
-class Ball: IGameObject {
+internal class Ball: IGameObject {
     public Vector2 Position;
 
     public Vector2 Speed;
     
     private readonly Vector2 resolution;
 
-    private readonly int ballRadius;
+    public readonly int BallRadius;
 
     public delegate void UpdateBallCallback();
 
-    public UpdateBallCallback updateCallback;
+    public UpdateBallCallback UpdateCallback;
 
     public Ball(Vector2 position, Vector2 speed, Vector2 resolution) {
         this.Position = position;
         this.Speed = speed;
         this.resolution = resolution;
-        ballRadius = 24;
+        BallRadius = 24;
     }
 
     public bool Update() {
+        UpdateCallback();
         Position.x += Speed.x;
         Position.y += Speed.y;
         if (Position.x < 0) {
@@ -93,22 +99,20 @@ class Ball: IGameObject {
             Position.y = 0;
             Speed.y = -Speed.y;
         }
-        if (Position.x > resolution.x - ballRadius) {
-            return false;
-            // Position.x = resolution.x- ballRadius;
-            // Speed.x = -Speed.x;
+        if (Position.x > resolution.x - BallRadius) {
+            Position.x = resolution.x- BallRadius;
+            Speed.x = -Speed.x;
         }
-        if (Position.y > resolution.y - ballRadius) {
-            Position.y = resolution.y- ballRadius;
+        if (Position.y > resolution.y - BallRadius) {
+            return false;
+            Position.y = resolution.y- BallRadius;
             Speed.y = -Speed.y;
         }
-
-        updateCallback();
         return true;
     }
 }
 
-class Player: IGameObject {
+internal class Player: IGameObject {
     public Vector2 Position;
     public Vector2 Size;
     public Player(Vector2 position, Vector2 size) {
